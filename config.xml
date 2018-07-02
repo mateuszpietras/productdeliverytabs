@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<module>
+	<name>productdeliverytabs</name>
+	<displayName><![CDATA[productdaliverytabs]]></displayName>
+	<version><![CDATA[1.0.0]]></version>
+	<description><![CDATA[Display a dalivery time on product page]]></description>
+	<author><![CDATA[Mirjan24]]></author>
+	<tab><![CDATA[content_management]]></tab>
+	<is_configurable>1</is_configurable>
+	<need_instance>1</need_instance>
+</module>
