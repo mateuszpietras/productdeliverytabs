@@ -2,6 +2,7 @@
 
 	require_once(dirname(__FILE__).'/../../config/config.inc.php');
 	require_once(dirname(__FILE__).'/../../init.php');
+	require_once('productdeliverytabs.php');
 
 	$id_product = Tools::getValue('id_product');
 
@@ -31,21 +32,9 @@
 
 	  case 'getSpecialColors' :
 	    	
-		$sql = 'SELECT DISTINCT a.id_attribute FROM `ps_attribute` a
-				LEFT JOIN `'._DB_PREFIX_.'attribute_group` ag ON (a.id_attribute_group = ag.id_attribute_group)
-				LEFT JOIN `'._DB_PREFIX_.'product_attribute_combination` pac ON (a.id_attribute = pac.id_attribute)
-				LEFT JOIN `'._DB_PREFIX_.'productdeliverytabs` pdt ON (pac.id_product_attribute = pdt.id_product_attribute)
-				LEFT JOIN `'._DB_PREFIX_.'productdeliverytabs_labels` pdtl ON (pdt.id_supplier = pdtl.id_supplier)
-				WHERE pdt.id_product = '.(int)$id_product.' AND ag.group_type = "color" AND pdtl.label = 1';
+		$attrubutes = Productdeliverytabs::getLabeledAttributesByIdProduct((int)$id_product);
 
-		$attributes = Db::getInstance()->executeS($sql);
-		$json = array();
-		
-		foreach ($attributes as $attribute) {
-			$json[] = $attribute['id_attribute'];
-		}
-
-			die(Tools::jsonEncode($json));
+			die(Tools::jsonEncode($attrubutes));
 	    break;
 
 
