@@ -134,7 +134,7 @@ class Productdeliverytabs extends Module
 
         $delivery = array(
             'name' => $supplier->name,
-            'label' => $this->getLabelByIdSupplier($params['id_supplier'])
+            'label' => $this->getLabelByIdSupplier((int)$id_supplier)
         );
 
         $this->context->smarty->assign('delivery', $delivery);
@@ -197,6 +197,32 @@ class Productdeliverytabs extends Module
     {
         $this->context->controller->addJquery();
         $this->context->controller->addJS($this->_path.'/views/js/back/productdeliverytabs.js');
+
+    }
+
+    public static function getLabeledAttributesByIdProduct($id_product){
+
+        $attrubutes = Db::getInstance()->executeS('SELECT DISTINCT a.id_attribute, pdt.id_supplier FROM `ps_attribute` a
+                LEFT JOIN `'._DB_PREFIX_.'attribute_group` ag ON (a.id_attribute_group = ag.id_attribute_group)
+                LEFT JOIN `'._DB_PREFIX_.'product_attribute_combination` pac ON (a.id_attribute = pac.id_attribute)
+                LEFT JOIN `'._DB_PREFIX_.'product_attribute` pa ON (pac.id_product_attribute = pa.id_product_attribute)
+                LEFT JOIN `'._DB_PREFIX_.'productdeliverytabs` pdt ON (pac.id_product_attribute = pdt.id_product_attribute)
+                WHERE pa.id_product = '.(int)$id_product.' AND ag.group_type = "color"');
+
+        $product = new Product((int)$id_product);
+
+        $labeled = array();
+
+        foreach ($attrubutes as &$attrubute) {
+
+            if($attrubute['id_supplier'] == null)
+                $attrubute['id_supplier'] = $product->id_supplier;
+
+            if(Productdeliverytabs::getLabelByIdSupplier($attrubute['id_supplier']))
+                $labeled[] = (int)$attrubute['id_attribute'];
+        }
+
+        return $labeled;
 
     }
 
