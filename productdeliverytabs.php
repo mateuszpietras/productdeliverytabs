@@ -188,8 +188,8 @@ class Productdeliverytabs extends Module
 
     public function hookHeader()
     {
-
-        $this->context->controller->addJS($this->_path.'/views/js/front/productdeliverytabs.js');
+        if ($this->context->controller->php_self == 'product')
+            $this->context->controller->addJS($this->_path.'/views/js/front/productdeliverytabs.js');
 
     }
 
