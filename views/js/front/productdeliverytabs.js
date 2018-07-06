@@ -1,7 +1,7 @@
 $(document).ready(function(){
 	var id_combination = parseInt($('#idCombination').val());
 	delivery.refresh(id_combination);
-	delivery.getSlecialColors();
+	delivery.getSpecialColors();
 });
 
 $(document).on('click', '.color_pick', function(e){
@@ -50,7 +50,7 @@ var delivery = {
 		});
 
 	},
-	getSlecialColors: function() {
+	getSpecialColors: function() {
 
 		$.ajax({
 		  type: 'POST',
