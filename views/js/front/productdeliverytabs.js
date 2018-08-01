@@ -1,7 +1,7 @@
 $(document).ready(function(){
 	var id_combination = parseInt($('#idCombination').val());
 	delivery.refresh(id_combination);
-	delivery.getSpecialColors();
+	delivery.getSpecialAttributes();
 });
 
 $(document).on('click', '.color_pick', function(e){
@@ -50,20 +50,30 @@ var delivery = {
 		});
 
 	},
-	getSpecialColors: function() {
+	getSpecialAttributes: function() {
 
 		$.ajax({
 		  type: 'POST',
 		  url: baseDir + 'modules/productdeliverytabs/productdeliverytabs-ajax.php',
 		  data: {
 		  	'id_product': id_product,
-		  	'method': 'getSpecialColors'
+		  	'method': 'getSpecialAttributes'
 		  },
 		  dataType: 'json',
 		  success: function(attributtes) {
-		  		$.each(attributtes, function(k, attributte){
-		  			$('#color_' + attributte).addClass('color_pick_extra');
-		  		});
+
+		  	$.each(attributtes.color, function(k, attributte){
+		  		$('#color_' + attributte).addClass('color_pick_extra');
+		  	});
+		  	
+		  	$.each(attributtes.radio, function(k, attributte){
+		  		$('#radio_' + attributte).parent().find('label').addClass('extra-label');
+		  	});
+
+		  	$.each(attributtes.select, function(k, attributte){
+				$('option[value="' + attributte + '"]').addClass('extra-option');
+			});
+
 		  }
 		});
 
