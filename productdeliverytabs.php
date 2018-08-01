@@ -202,24 +202,45 @@ class Productdeliverytabs extends Module
 
     public static function getLabeledAttributesByIdProduct($id_product){
 
-        $attrubutes = Db::getInstance()->executeS('SELECT DISTINCT a.id_attribute, pdt.id_supplier FROM `ps_attribute` a
+        $attributes = Db::getInstance()->executeS('SELECT a.id_attribute, pdt.id_supplier, ag.group_type FROM `ps_attribute` a
                 LEFT JOIN `'._DB_PREFIX_.'attribute_group` ag ON (a.id_attribute_group = ag.id_attribute_group)
                 LEFT JOIN `'._DB_PREFIX_.'product_attribute_combination` pac ON (a.id_attribute = pac.id_attribute)
                 LEFT JOIN `'._DB_PREFIX_.'product_attribute` pa ON (pac.id_product_attribute = pa.id_product_attribute)
                 LEFT JOIN `'._DB_PREFIX_.'productdeliverytabs` pdt ON (pac.id_product_attribute = pdt.id_product_attribute)
-                WHERE pa.id_product = '.(int)$id_product.' AND ag.group_type = "color"');
+                WHERE pa.id_product = '.(int)$id_product);
 
         $product = new Product((int)$id_product);
 
-        $labeled = array();
+        $labeled = array(
+            'color' => [],
+            'radio' => [],
+            'select' =>[]
+        );
 
-        foreach ($attrubutes as &$attrubute) {
+        foreach ($attributes as &$attribute) {
 
-            if($attrubute['id_supplier'] == null)
-                $attrubute['id_supplier'] = $product->id_supplier;
+            if($attribute['id_supplier'] == null)
+                $attribute['id_supplier'] = $product->id_supplier;
 
-            if(Productdeliverytabs::getLabelByIdSupplier($attrubute['id_supplier']))
-                $labeled[] = (int)$attrubute['id_attribute'];
+            if(Productdeliverytabs::getLabelByIdSupplier($attribute['id_supplier'])) 
+
+                switch($attribute['group_type']) {
+                    case 'color':
+                        if(!in_array($attribute['id_attribute'], $labeled['color']))
+                            $labeled['color'][] = (int)$attribute['id_attribute'];
+                        break;
+
+                    case 'radio':
+                        if(!in_array($attribute['id_attribute'], $labeled['radio']))
+                            $labeled['radio'][] = (int)$attribute['id_attribute'];
+                        break;
+
+                    case 'select':
+                        if(!in_array($attribute['id_attribute'], $labeled['select']))
+                            $labeled['select'][] = (int)$attribute['id_attribute'];
+                        break;
+                }
+
         }
 
         return $labeled;
