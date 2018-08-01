@@ -30,11 +30,11 @@
 			die(Tools::jsonEncode($json));
 	    break;
 
-	  case 'getSpecialColors' :
+	  case 'getSpecialAttributes' :
 	    	
-		$attrubutes = Productdeliverytabs::getLabeledAttributesByIdProduct((int)$id_product);
+		$attributes = Productdeliverytabs::getLabeledAttributesByIdProduct((int)$id_product);
 
-			die(Tools::jsonEncode($attrubutes));
+			die(Tools::jsonEncode($attributes));
 	    break;
 
 
