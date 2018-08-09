@@ -27,11 +27,11 @@ var delivery = {
 
 		this.getTime(id_combination).success(function(delivery){
 			if(delivery.name != null)
-				$('.js-delivery-time').text(delivery.name);
+				$('.pb-right-column .js-delivery-time, .pb-center-column .js-delivery-time').text(delivery.name);
 			if(delivery.label && delivery.label != null){
-				$('.js-delivery-time').addClass('text-success');
+				$('.pb-right-column .js-delivery-time, .pb-center-column .js-delivery-time').addClass('text-success');
 			} else {
-				$('.js-delivery-time').removeClass('text-success');
+				$('.pb-right-column .js-delivery-time, .pb-center-column .js-delivery-time').removeClass('text-success');
 			}
 		});
 
