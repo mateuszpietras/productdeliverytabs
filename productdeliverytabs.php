@@ -57,13 +57,13 @@ class Productdeliverytabs extends Module
 
         if (((bool)Tools::isSubmit('submitSuppliersLabels')) == true) {
             $this->postProcess();
-
-            //print_r(Tools::getValue('label'));
         }
+
         $suppliers = Supplier::getSuppliers();
 
         foreach ($suppliers as &$supplier) {
            $supplier['label'] = (int)$this->getLabelByIdSupplier($supplier['id_supplier']);
+           $supplier['color'] = $this->getLabelColorByIdSupplier($supplier['id_supplier']);
         }
 
         $this->context->smarty->assign(
@@ -78,29 +78,40 @@ class Productdeliverytabs extends Module
     }
 
     public function postProcess() {
+
         $this->resetSuppliersLabels();
+        $colors = Tools::getValue('color');
+        $css = '';
         if($labels = Tools::getValue('label'))
         foreach ($labels as $id_supplier => $label) {
-            $this->updateSupplierLabels($id_supplier, true);
+            $this->updateSupplierLabels($id_supplier, true, $colors[$id_supplier]);
+            $css .= '.label_'.$id_supplier.'{color: '.$colors[$id_supplier].';}';
         }
+
+        file_put_contents(_PS_MODULE_DIR_.'productdeliverytabs/views/css/labels.css', $css);
 
     }
 
-    public function updateSupplierLabels($id_supplier, $label) {
+    public function updateSupplierLabels($id_supplier, $label, $color = '#333') {
 
         $supplier_exists = Db::getInstance()->getValue('SELECT id_supplier FROM `'._DB_PREFIX_.'productdeliverytabs_labels` WHERE id_supplier ='.(int)$id_supplier);
 
         if($supplier_exists) 
-            return Db::getInstance()->execute('UPDATE `'._DB_PREFIX_.'productdeliverytabs_labels` SET label = 1 WHERE id_supplier = '.(int)$id_supplier);
+            return Db::getInstance()->execute('UPDATE `'._DB_PREFIX_.'productdeliverytabs_labels` SET label = 1, color = "'.pSQL($color).'" WHERE id_supplier = '.(int)$id_supplier);
          else
-            return Db::getInstance()->execute('INSERT INTO `'._DB_PREFIX_.'productdeliverytabs_labels` (`id_supplier`, `label`) VALUES ('.(int)$id_supplier.','.(int)$label.')');
+            return Db::getInstance()->execute('INSERT INTO `'._DB_PREFIX_.'productdeliverytabs_labels` (`id_supplier`, `label`, `color`) VALUES ('.(int)$id_supplier.','.(int)$label.',"'.pSQL($color).'")');
 
     
     }
 
-    public function getLabelByIdSupplier($id_supplier) {
+    public static function getLabelByIdSupplier($id_supplier) {
 
         return Db::getInstance()->getValue('SELECT label FROM `'._DB_PREFIX_.'productdeliverytabs_labels` WHERE id_supplier ='.(int)$id_supplier);
+    }
+    
+    public static function getLabelColorByIdSupplier($id_supplier) {
+
+        return Db::getInstance()->getValue('SELECT color FROM `'._DB_PREFIX_.'productdeliverytabs_labels` WHERE id_supplier ='.(int)$id_supplier);
     }
 
     public function resetSuppliersLabels() {
@@ -123,7 +134,6 @@ class Productdeliverytabs extends Module
 
    public function hookDisplayDeliveryTime($params) {
 
-
         if(isset($params['id_product_attribute'])) {
             $id_supplier = $this->getIdSupplierByIdProductAttribute((int)$params['id_product_attribute']) ? $this->getIdSupplierByIdProductAttribute((int)$params['id_product_attribute']) : $params['id_supplier'];
         } else {
@@ -133,6 +143,7 @@ class Productdeliverytabs extends Module
         $supplier = new Supplier((int)$id_supplier, $this->context->language->id);
 
         $delivery = array(
+            'id_supplier' => $supplier->id_supplier,
             'name' => $supplier->name,
             'label' => $this->getLabelByIdSupplier((int)$id_supplier)
         );
@@ -188,6 +199,8 @@ class Productdeliverytabs extends Module
 
     public function hookHeader()
     {
+        $this->context->controller->addCSS($this->_path.'/views/css/labels.css');
+
         if ($this->context->controller->php_self == 'product')
             $this->context->controller->addJS($this->_path.'/views/js/front/productdeliverytabs.js');
 
