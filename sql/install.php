@@ -35,7 +35,8 @@ $sql[] = 'CREATE TABLE IF NOT EXISTS `'._DB_PREFIX_.'productdeliverytabs` (
 
 $sql[] = 'CREATE TABLE IF NOT EXISTS `'._DB_PREFIX_.'productdeliverytabs_labels` (
     `id_supplier` int(11) NOT NULL,
-	`label` int(11) DEFAULT 0,
+    `label` int(11) DEFAULT 0,
+    `color` VARCHAR(8) DEFAULT "#333333",
     PRIMARY KEY  (`id_supplier`)
 ) ENGINE='._MYSQL_ENGINE_.' DEFAULT CHARSET=utf8;';
 
