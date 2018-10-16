@@ -23,6 +23,7 @@
 			}
 
 			$json = array(
+				'id_supplier' => $supplier->id_supplier,
 				'name' => $supplier->name,
 				'label' => (bool)$supplier->label
 			);
