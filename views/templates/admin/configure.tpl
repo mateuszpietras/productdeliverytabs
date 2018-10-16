@@ -23,6 +23,7 @@
 					<td>{$supplier.name}</td>
 					<td class="text-center">
 						<input name="label[{$supplier.id_supplier}]" type="checkbox" {if $supplier.label} checked{/if}>
+						<input name="color[{$supplier.id_supplier}]" type="color" value="{$supplier.color}">
 					</td>
 				</tr>
 				
