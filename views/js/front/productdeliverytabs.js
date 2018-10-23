@@ -29,17 +29,21 @@ var delivery = {
 
 		this.getTime(id_combination).success(function(delivery){
 
+			var selector = $('.pb-right-column .js-delivery-time, .pb-center-column .js-delivery-time');
+
 			if(delivery.name != null)
-				$('.pb-right-column .js-delivery-time, .pb-center-column .js-delivery-time').text(delivery.name);
+				selector.text(delivery.name);
 			if(delivery.label && delivery.label != null){
-				$('.pb-right-column .js-delivery-time, .pb-center-column .js-delivery-time').removeClass('label_' + combination_supplier_id).addClass('label_' + delivery.id_supplier);
+				selector.removeClass(function (index, className) {
+				    return (className.match (/\blabel_\d/g) || []).join(' ');
+				}).addClass('label_' + delivery.id_supplier);
+
 			} else {
-				$('.pb-right-column .js-delivery-time, .pb-center-column .js-delivery-time').removeClass('label_' + combination_supplier_id).removeClass('label_' + delivery.id_supplier);
+				selector.removeClass(function (index, className) {
+				    return (className.match (/\blabel_\d/g) || []).join(' ');
+				});
 			}
-
-			combination_supplier_id = delivery.id_supplier;
 		});
-
 	},
 	getTime: function(id_combination) {
 		return $.ajax({
