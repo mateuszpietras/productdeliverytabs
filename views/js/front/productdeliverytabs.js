@@ -26,11 +26,9 @@ var combination_supplier_id;
 
 var delivery = {
 	refresh: function(id_combination) {
-
+		
+		var selector = $('.pb-right-column .js-delivery-time, .pb-center-column .js-delivery-time');
 		this.getTime(id_combination).success(function(delivery){
-
-			var selector = $('.pb-right-column .js-delivery-time, .pb-center-column .js-delivery-time');
-
 			if(delivery.name != null)
 				selector.text(delivery.name);
 			if(delivery.label && delivery.label != null){
