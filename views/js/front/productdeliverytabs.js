@@ -1,6 +1,6 @@
 $(document).ready(function(){
 	var id_combination = parseInt($('#idCombination').val());
-	delivery.refresh(id_combination);
+	//delivery.refresh(id_combination);
 	delivery.getSpecialAttributes();
 });
 
