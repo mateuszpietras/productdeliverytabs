@@ -1,65 +1,30 @@
-$(document).ready(function(){
-	var id_combination = parseInt($('#idCombination').val());
-	//delivery.refresh(id_combination);
-	delivery.getSpecialAttributes();
-});
-
-$(document).on('click', '.color_pick', function(e){
-	e.preventDefault();
-	var id_combination = parseInt($('#idCombination').val());
-	delivery.refresh(id_combination);
-});
-
-$(document).on('change', '.attribute_select', function(e){
-	e.preventDefault();
-	var id_combination = parseInt($('#idCombination').val());
-	delivery.refresh(id_combination);
-});
-
-$(document).on('click', '.attribute_radio', function(e){
-	e.preventDefault();
-	var id_combination = parseInt($('#idCombination').val());
-	delivery.refresh(id_combination);
-});
-
-var combination_supplier_id;
+var specialCombinations = false;
 
 var delivery = {
-	refresh: function(id_combination) {
-		
-		var selector = $('.pb-right-column .js-delivery-time, .pb-center-column .js-delivery-time');
-		this.getTime(id_combination).success(function(delivery){
-			if(delivery.name != null)
-				selector.text(delivery.name);
-			if(delivery.label && delivery.label != null){
-				selector.removeClass(function (index, className) {
-				    return (className.match (/\blabel_\d/g) || []).join(' ');
-				}).addClass('label_' + delivery.id_supplier);
 
-			} else {
-				selector.removeClass(function (index, className) {
-				    return (className.match (/\blabel_\d/g) || []).join(' ');
-				});
-			}
-		});
+	el: '.pb-right-column .js-delivery-time, .pb-center-column .js-delivery-time',
+
+	init: function(id_combination) {
+
+		var _this = this;
+
+		if(!specialCombinations) {
+			this.getCombinations().success(function(combinations){
+				specialCombinations = combinations;
+				_this.getSpecialColors(specialCombinations[parseInt(id_combination)]);
+				_this.toggleTime(specialCombinations[parseInt(id_combination)]);
+			});
+		} else {
+			_this.toggleTime(specialCombinations[parseInt(id_combination)]);
+			_this.getSpecialColors(specialCombinations[parseInt(id_combination)]);
+			
+
+		}
 	},
-	getTime: function(id_combination) {
+
+	getCombinations: function() {
+
 		return $.ajax({
-		  type: 'POST',
-		  url: baseDir + 'modules/productdeliverytabs/productdeliverytabs-ajax.php',
-		  data: {
-		  	'id_product_attribute': id_combination,
-		  	'id_lang': id_lang,
-		  	'id_product': id_product,
-		  	'method': 'getDeliveryTime'
-		  },
-		  dataType: 'json',
-		});
-
-	},
-	getSpecialAttributes: function() {
-
-		$.ajax({
 		  type: 'POST',
 		  url: baseDir + 'modules/productdeliverytabs/productdeliverytabs-ajax.php',
 		  data: {
@@ -67,21 +32,58 @@ var delivery = {
 		  	'method': 'getSpecialAttributes'
 		  },
 		  dataType: 'json',
-		  success: function(attributtes) {
-		  	$.each(attributtes.color, function(k, attributte){
-		  		$('#color_' + attributte).addClass('color_pick_extra');
-		  	});
-		  	
-		  	$.each(attributtes.radio, function(k, attributte){
-		  		$('#radio_' + attributte).parent().find('label').addClass('extra-label');
-		  	});
+		});
 
-		  	$.each(attributtes.select, function(k, attributte){
-				$('option[value="' + attributte + '"]').addClass('extra-option');
-			});
+	},
 
-		  }
+	toggleTime: function(combination) {
+
+		$(this.el).text(combination.deliveryName)
+
+
+		// Toggle a Delivery time
+		if(typeof(combination.className) !== "undefined") {
+			$(this.el).removeClass(function (index, className) {
+			    return (className.match (/\blabel_\d/g) || []).join(' ');
+			}).addClass(combination.className);
+		} else {
+			$(this.el).removeClass(function (index, className) {
+			    return (className.match (/\blabel_\d/g) || []).join(' ');
+			})
+		}
+
+	},
+
+	removeClassFromColorAttribut: function() {
+
+		$('[class*="color_"]').removeClass(function (index, className) {
+			    return (className.match (/\blabel_\d/g) || []).join(' ');
+		});
+
+	},
+
+	getSpecialColors: function(selectedCombination) {
+
+		id_radio_attribute = selectedCombination.attributes.radio
+
+		this.removeClassFromColorAttribut();
+
+		$.each(specialCombinations, function(id_combination, combination) {
+
+			if(combination.attributes) {
+				
+				if(combination.attributes.radio == id_radio_attribute && combination.className) {
+
+					$('#color_' + combination.attributes.color).removeClass(function (index, className) {
+						    return (className.match (/\blabel_\d/g) || []).join(' ');
+					}).addClass(combination.className);
+
+				}
+
+			}
+
 		});
 
 	}
+
 }
