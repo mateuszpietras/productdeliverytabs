@@ -81,11 +81,26 @@ class Productdeliverytabs extends Module
 
         $this->resetSuppliersLabels();
         $colors = Tools::getValue('color');
-        $css = '';
+        $css = '#attributes [class*="label_"]::before {
+            content: "sd";
+            display: none;
+            width: 22px;
+            height: 22px;
+            background: #fff;
+            position: absolute;
+            border: 2px solid;
+            border-radius: 2px;
+            line-height: 1.6;
+            text-align: center;
+            font-weight: 500;
+            transform: translate(30px,-3px);
+            box-shadow: 0 3px 8px rgba(0,0,0,.2);
+            transition: .2s ease;
+        }';
         if($labels = Tools::getValue('label'))
         foreach ($labels as $id_supplier => $label) {
             $this->updateSupplierLabels($id_supplier, true, $colors[$id_supplier]);
-            $css .= '.label_'.$id_supplier.'{color: '.$colors[$id_supplier].';}';
+            $css .= '.label_'.$id_supplier.'{color: '.$colors[$id_supplier].';}.label_'.$id_supplier.'::before { display: block !important; color: '.$colors[$id_supplier].';}';
         }
 
         file_put_contents(_PS_MODULE_DIR_.'productdeliverytabs/views/css/labels.css', $css);
@@ -213,46 +228,60 @@ class Productdeliverytabs extends Module
 
     }
 
-    public static function getLabeledAttributesByIdProduct($id_product){
+    public static function getLabeledAttributesByIdProduct($id_product, $id_lang = 2){
 
-        $attributes = Db::getInstance()->executeS('SELECT a.id_attribute, pdt.id_supplier, ag.group_type FROM `ps_attribute` a
+
+        $combinations = Db::getInstance()->executeS('SELECT DISTINCT pac.id_product_attribute as id FROM `ps_attribute` a
+                LEFT JOIN `'._DB_PREFIX_.'product_attribute_combination` pac ON (a.id_attribute = pac.id_attribute)
+                LEFT JOIN `'._DB_PREFIX_.'product_attribute` pa ON (pac.id_product_attribute = pa.id_product_attribute)
+                WHERE pa.id_product = '.(int)$id_product);
+
+
+        $labeled = array();
+
+        foreach ($combinations as $combination) {
+                
+            $attributes = Db::getInstance()->executeS('SELECT a.id_attribute, pdt.id_supplier, ag.group_type FROM `ps_attribute` a
                 LEFT JOIN `'._DB_PREFIX_.'attribute_group` ag ON (a.id_attribute_group = ag.id_attribute_group)
                 LEFT JOIN `'._DB_PREFIX_.'product_attribute_combination` pac ON (a.id_attribute = pac.id_attribute)
                 LEFT JOIN `'._DB_PREFIX_.'product_attribute` pa ON (pac.id_product_attribute = pa.id_product_attribute)
                 LEFT JOIN `'._DB_PREFIX_.'productdeliverytabs` pdt ON (pac.id_product_attribute = pdt.id_product_attribute)
-                WHERE pa.id_product = '.(int)$id_product);
+                WHERE pac.id_product_attribute = '.(int)$combination['id']);
 
-        $product = new Product((int)$id_product);
 
-        $labeled = array(
-            'color' => [],
-            'radio' => [],
-            'select' =>[]
-        );
 
-        foreach ($attributes as &$attribute) {
+           $labeled[(int)$combination['id']]['attributes'] = false;
+           $labeled[(int)$combination['id']]['className'] = false;
 
-            if($attribute['id_supplier'] == null)
-                $attribute['id_supplier'] = $product->id_supplier;
+            foreach ($attributes as &$attribute) {
 
-            if(Productdeliverytabs::getLabelByIdSupplier($attribute['id_supplier'])) 
+                if($attribute['id_supplier'] == null) {
 
-                switch($attribute['group_type']) {
-                    case 'color':
-                        if(!in_array($attribute['id_attribute'], $labeled['color']))
-                            $labeled['color'][] = (int)$attribute['id_attribute'];
-                        break;
+                     $product = new Product((int)$id_product);               
+                     $attribute['id_supplier'] = $product->id_supplier;
 
-                    case 'radio':
-                        if(!in_array($attribute['id_attribute'], $labeled['radio']))
-                            $labeled['radio'][] = (int)$attribute['id_attribute'];
-                        break;
-
-                    case 'select':
-                        if(!in_array($attribute['id_attribute'], $labeled['select']))
-                            $labeled['select'][] = (int)$attribute['id_attribute'];
-                        break;
                 }
+                $supplier = new Supplier((int)$attribute['id_supplier'], (int)$id_lang);
+                $labeled[(int)$combination['id']]['deliveryName'] = $supplier->name;
+                
+                $labeled[(int)$combination['id']]['className'] = Productdeliverytabs::getLabelByIdSupplier($attribute['id_supplier']) ? 'label_'.$attribute['id_supplier'] : false;
+                    
+                switch($attribute['group_type']) {
+                        case 'color':
+                                $labeled[(int)$combination['id']]['attributes']['color'] = (int)$attribute['id_attribute'];
+                            break;
+
+                        case 'radio':
+                                $labeled[(int)$combination['id']]['attributes']['radio'] = (int)$attribute['id_attribute'];
+                            break;
+
+                        case 'select':
+                                $labeled[(int)$combination['id']]['attributes']['select'] = (int)$attribute['id_attribute'];
+                            break;
+                }
+            
+
+            }
 
         }
 
