@@ -64,15 +64,16 @@ var delivery = {
 
 	getSpecialColors: function(selectedCombination) {
 
-		id_radio_attribute = selectedCombination.attributes.radio
+		var id_radio_attribute = typeof(selectedCombination.attributes.radio) !== "undefined" ? selectedCombination.attributes.radio : false;
+		var id_select_attribute = typeof(selectedCombination.attributes.select) !== "undefined" ? selectedCombination.attributes.select : false;
 
 		this.removeClassFromColorAttribut();
 
 		$.each(specialCombinations, function(id_combination, combination) {
 
 			if(combination.attributes) {
-				
-				if(combination.attributes.radio == id_radio_attribute && combination.className) {
+				console.log(Boolean(combination.attributes.radio == id_radio_attribute || combination.attributes.select == id_select_attribute))
+				if((combination.attributes.radio == id_radio_attribute || combination.attributes.select == id_select_attribute) && combination.className) {
 
 					$('#color_' + combination.attributes.color).removeClass(function (index, className) {
 						    return (className.match (/\blabel_\d/g) || []).join(' ');
