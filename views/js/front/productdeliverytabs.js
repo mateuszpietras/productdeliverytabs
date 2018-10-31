@@ -71,20 +71,22 @@ var delivery = {
 
 		$.each(specialCombinations, function(id_combination, combination) {
 
-			if(combination.attributes) {
-				console.log(Boolean(combination.attributes.radio == id_radio_attribute || combination.attributes.select == id_select_attribute))
+			if(typeof(selectedCombination.attributes.color) !== "undefined") {
+
 				if((combination.attributes.radio == id_radio_attribute || combination.attributes.select == id_select_attribute) && combination.className) {
 
 					$('#color_' + combination.attributes.color).removeClass(function (index, className) {
 						    return (className.match (/\blabel_\d/g) || []).join(' ');
 					}).addClass(combination.className);
 
+				} else if(!combination.attributes.radio && !combination.attributes.select && combination.className) {
+
+					$('#color_' + combination.attributes.color).removeClass(function (index, className) {
+						    return (className.match (/\blabel_\d/g) || []).join(' ');
+					}).addClass(combination.className);
 				}
-
 			}
-
 		});
-
 	}
 
 }
