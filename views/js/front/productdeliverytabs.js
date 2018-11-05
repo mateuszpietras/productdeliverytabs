@@ -2,7 +2,7 @@ var specialCombinations = false;
 
 var delivery = {
 
-	el: '.pb-right-column .js-delivery-time, .pb-center-column .js-delivery-time',
+	el: '.box-product .js-delivery-time',
 
 	init: function(id_combination) {
 
@@ -42,13 +42,13 @@ var delivery = {
 
 
 		// Toggle a Delivery time
-		if(typeof(combination.className) !== "undefined") {
+		if(combination.className) {
 			$(this.el).removeClass(function (index, className) {
-			    return (className.match (/\blabel_\d/g) || []).join(' ');
+			    return (className.match (/\blabel_\d*/g) || []).join(' ');
 			}).addClass(combination.className);
 		} else {
 			$(this.el).removeClass(function (index, className) {
-			    return (className.match (/\blabel_\d/g) || []).join(' ');
+			    return (className.match (/\blabel_\d*/g) || []).join(' ');
 			})
 		}
 
@@ -84,9 +84,13 @@ var delivery = {
 					$('#color_' + combination.attributes.color).removeClass(function (index, className) {
 						    return (className.match (/\blabel_\d/g) || []).join(' ');
 					}).addClass(combination.className);
+
 				}
+
 			}
+
 		});
+
 	}
 
 }
