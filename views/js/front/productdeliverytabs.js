@@ -43,10 +43,12 @@ var delivery = {
 
 		// Toggle a Delivery time
 		if(combination.className) {
+			$('#deliveryAlert').fadeOut();
 			$(this.el).removeClass(function (index, className) {
 			    return (className.match (/\blabel_\d*/g) || []).join(' ');
 			}).addClass(combination.className);
 		} else {
+			$('#deliveryAlert').fadeIn();
 			$(this.el).removeClass(function (index, className) {
 			    return (className.match (/\blabel_\d*/g) || []).join(' ');
 			})
