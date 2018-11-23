@@ -59,39 +59,75 @@ var delivery = {
 	removeClassFromColorAttribut: function() {
 
 		$('[class*="color_"]').removeClass(function (index, className) {
-			    return (className.match (/\blabel_\d/g) || []).join(' ');
+			    return (className.match (/\blabel_\d*/g) || []).join(' ');
 		});
 
 	},
 
 	getSpecialColors: function(selectedCombination) {
 
-		var id_radio_attribute = typeof(selectedCombination.attributes.radio) !== "undefined" ? selectedCombination.attributes.radio : false;
-		var id_select_attribute = typeof(selectedCombination.attributes.select) !== "undefined" ? selectedCombination.attributes.select : false;
 
+		var selectedRadioAttribute = typeof(selectedCombination.attributes.radio) !== "undefined" ? selectedCombination.attributes.radio : false;
+		var selectedSelectAttribute = typeof(selectedCombination.attributes.select) !== "undefined" ? selectedCombination.attributes.select : false;
+		
 		this.removeClassFromColorAttribut();
+
+		var _this = this;
 
 		$.each(specialCombinations, function(id_combination, combination) {
 
 			if(typeof(selectedCombination.attributes.color) !== "undefined") {
 
-				if((combination.attributes.radio == id_radio_attribute || combination.attributes.select == id_select_attribute) && combination.className) {
+				if((selectedRadioAttribute || selectedSelectAttribute) && combination.className) {
 
-					$('#color_' + combination.attributes.color).removeClass(function (index, className) {
-						    return (className.match (/\blabel_\d/g) || []).join(' ');
-					}).addClass(combination.className);
+					if(_this.checkAttributes(combination.attributes.radio, selectedRadioAttribute) || _this.checkAttributes(combination.attributes.select, selectedSelectAttribute))
+						$.each(combination.attributes.color, function(k, id_attribute) {
+
+							$('#color_' + id_attribute).removeClass(function (index, className) {
+								    return (className.match (/\blabel_\d*/g) || []).join(' ');
+							}).addClass(combination.className);
+
+						});
 
 				} else if(!combination.attributes.radio && !combination.attributes.select && combination.className) {
 
-					$('#color_' + combination.attributes.color).removeClass(function (index, className) {
-						    return (className.match (/\blabel_\d/g) || []).join(' ');
-					}).addClass(combination.className);
+						$.each(combination.attributes.color, function(k, id_attribute) {
 
+							$('#color_' + id_attribute).removeClass(function (index, className) {
+								    return (className.match (/\blabel_\d*/g) || []).join(' ');
+							}).addClass(combination.className);
+
+						});
 				}
 
 			}
 
 		});
+
+	},
+
+	checkAttributes: function(attributes, selectAttributes) {
+
+
+		if(!selectAttributes)
+			return false;
+
+		if(attributes.length == selectAttributes.length) {
+			var output = true;
+
+			$.each(attributes, function(k, id_attribute) {
+				
+				if(id_attribute != selectAttributes[k]){
+					output = false;
+				}	
+
+			});
+
+			return output;
+
+		} else {
+			return false;
+		}
 
 	}
 
