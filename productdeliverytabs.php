@@ -82,10 +82,12 @@ class Productdeliverytabs extends Module
         $this->resetSuppliersLabels();
         $colors = Tools::getValue('color');
         $css = '#attributes [class*="label_"]::before {
-            content: "sd";
+            content: "\e828";
+            font-family: FontAwesome;
+            font-size: 11px;
             display: none;
             width: 22px;
-            height: 22px;
+            height: 20px;
             background: #fff;
             position: absolute;
             border: 2px solid;
@@ -93,7 +95,7 @@ class Productdeliverytabs extends Module
             line-height: 1.6;
             text-align: center;
             font-weight: 500;
-            transform: translate(30px,-3px);
+            transform: translate(30px,-4px);
             box-shadow: 0 3px 8px rgba(0,0,0,.2);
             transition: .2s ease;
         }';
@@ -268,15 +270,15 @@ class Productdeliverytabs extends Module
                     
                 switch($attribute['group_type']) {
                         case 'color':
-                                $labeled[(int)$combination['id']]['attributes']['color'] = (int)$attribute['id_attribute'];
+                                $labeled[(int)$combination['id']]['attributes']['color'][] = (int)$attribute['id_attribute'];
                             break;
 
                         case 'radio':
-                                $labeled[(int)$combination['id']]['attributes']['radio'] = (int)$attribute['id_attribute'];
+                                $labeled[(int)$combination['id']]['attributes']['radio'][] = (int)$attribute['id_attribute'];
                             break;
 
                         case 'select':
-                                $labeled[(int)$combination['id']]['attributes']['select'] = (int)$attribute['id_attribute'];
+                                $labeled[(int)$combination['id']]['attributes']['select'][] = (int)$attribute['id_attribute'];
                             break;
                 }
             
