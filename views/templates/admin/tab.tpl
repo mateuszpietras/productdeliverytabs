@@ -4,7 +4,12 @@
       <div class="panel-heading">
          <i class="icon-truck icon-fw"></i>{l s='Delivery time'}
       </div>
-
+      <div class="form-wrapper">
+          <button class="btn btn-default pull-right" id="resetDelivery" data-alert="{l s='Are you sure to reset all delivery times?' mod='productdeliverytabs'}">
+          <i class="process-icon-eraser"></i>
+          {l s='Reset' mod='productdeliverytabs'}
+        </button>
+      </div>
         <div class="form-wrapper">
           <input type="hidden" value="{$product_id_supplier}" id="product-id-supplier">
           <table class="table table-hover table-delivery-times">
