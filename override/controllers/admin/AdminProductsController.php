@@ -132,6 +132,11 @@ class AdminProductsController extends AdminProductsControllerCore
         die(Tools::jsonEncode($json));
         
     }
-
+    
+    public function ajaxProcessResetDeliveryTime()
+    {
+        $id_product = (int)Tools::getValue('id_product');
+        die(Tools::jsonEncode(Db::getInstance()->execute('DELETE FROM `'._DB_PREFIX_.'productdeliverytabs` WHERE id_product = '.(int)$id_product)));
+    }
 
 }
