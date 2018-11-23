@@ -13,6 +13,27 @@ $(document).on('click', '#submitDeliveryTimes', function(e){
 
 });
 
+$(document).on('click', '#resetDelivery', function(e){
+		e.preventDefault();
+
+
+		alert($(this).attr('data-alert'));
+
+		$.ajax({
+			url: location.href,
+			data: {
+				id_product: id_product,
+				ajax: true,
+				action: 'resetDeliveryTime'
+			},
+			dataType: "json",
+			success: function(response) {
+				location.reload();
+			}
+		})
+
+});
+
 
 function assignDeliveryTimes(id_attribute, selected_delivery_time) {
 
