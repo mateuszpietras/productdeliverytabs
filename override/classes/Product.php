@@ -20,6 +20,10 @@ class Product extends ProductCore
         return Db::getinstance()->getValue('SELECT id_supplier FROM `'._DB_PREFIX_.'productdeliverytabs` WHERE id_product_attribute ='.(int)$id_product_attribute);
 
     }
-
+    
+    public static function cleanProductEAN($id_product_new) {
+        
+        return Db::getInstance()->execute('UPDATE '._DB_PREFIX_.'product_attribute SET ean13 = "" WHERE `id_product` = '.$id_product_new);
+    }
 
 }
