@@ -156,19 +156,22 @@ class Productdeliverytabs extends Module
         } else {
             $id_supplier = $params['id_supplier'];
         }
+        $cache_id = 'product-delivery-time|'.$id_supplier;
 
-        $supplier = new Supplier((int)$id_supplier, $this->context->language->id);
+        if (!$this->isCached('product-delivery-time.tpl', $this->getCacheId($cache_id))) 
+        {
+            $supplier = new Supplier((int)$id_supplier, $this->context->language->id);
 
-        $delivery = array(
-            'id_supplier' => $supplier->id_supplier,
-            'name' => $supplier->name,
-            'label' => $this->getLabelByIdSupplier((int)$id_supplier)
-        );
+            $delivery = array(
+                'id_supplier' => $supplier->id_supplier,
+                'name' => $supplier->name,
+                'label' => $this->getLabelByIdSupplier((int)$id_supplier)
+            );
 
-        $this->context->smarty->assign('delivery', $delivery);
+            $this->context->smarty->assign('delivery', $delivery);
+        }
 
-        return $this->context->smarty->fetch($this->local_path.'views/templates/product-delivery-time.tpl');
-
+        return $this->display(__FILE__, 'product-delivery-time.tpl', $this->getCacheId($cache_id));
    }
 
    public function getIdSupplierByIdProductAttribute($id_product_attribute) {
